@@ -42,6 +42,8 @@ public class MainFrame extends JFrame {
     private final JTextArea textAreaIncoming;
     private final JTextArea textAreaOutgoing;
     private boolean cursor = false;
+    private boolean ctrl = false;
+    private boolean enter = false;
 
     public MainFrame() {
         super(FRAME_TITLE);
@@ -90,6 +92,24 @@ public class MainFrame extends JFrame {
             }
         });
 
+      //отслеживание событий клавиатуры
+        textAreaOutgoing.addKeyListener(new KeyAdapter() {
+
+            public void keyPressed(KeyEvent e) {
+                int codeKey = e.getKeyCode();
+                if (codeKey == 10) enter = true;
+                if (codeKey == 17) ctrl = true;
+                //Проверка на возможность отправки по условию
+                if(enter && ctrl && cursor) sendMessage();
+            }
+
+            public void keyReleased(KeyEvent e) {
+                int codeKey = e.getKeyCode();
+                if (codeKey == 10) enter = false;
+                if (codeKey == 17) ctrl = false;
+            }
+        });
+        
         // Компоновка элементов панели "Сообщение"
         final GroupLayout layout2 = new GroupLayout(messagePanel);
         messagePanel.setLayout(layout2);
@@ -185,7 +205,7 @@ public class MainFrame extends JFrame {
                 return;
             }
             if (message.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Вы не ввелите текс собщения.Пожалуйста введите", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Вы не ввели текст собщения.Пожалуйста введите", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             // Создаем сокет для соединения
